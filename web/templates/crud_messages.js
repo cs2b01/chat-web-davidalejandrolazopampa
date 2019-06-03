@@ -18,28 +18,39 @@ $(function(){
             allowDeleting: true,
             allowAdding: true
         },
-
-        remoteOperations: true,
+        remoteOperations: {
+            sorting: true,
+            paging: true
+        },
         paging: {
-            pageSize: 12
+            pageSize: 5
         },
         pager: {
             showPageSizeSelector: true,
-            allowedPageSizes: [8, 12, 20]
+            allowedPageSizes: [5, 10, 20]
         },
-        columns:
-        [{
+        headerFilter: {
+            visible: true
+        },
+        filterRow: {
+            visible: true
+        },
+
+        columns: [{
             dataField: "id",
             dataType: "number",
             allowEditing: false
         }, {
             dataField: "content",caption: "Mensaje: "
         }, {
-            dataField: "sent_on",caption: "Fecha: "
+            dataField: "sent_on",caption: "Fecha: ",
+            dataType: "string",
+            allowEditing: false
         }, {
-            dataField: "user_from_id",caption: "Para: ",displayExpr: "name"
+            dataField: "user_from_id", caption: "Para"
         }, {
-            dataField: "user_to_id",caption: "De: ",displayExpr: "name"
-        }, ]
+            dataField: "user_to_id",caption: "De: "
+
+        }],
     }).dxDataGrid("instance");
 });

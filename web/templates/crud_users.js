@@ -29,6 +29,12 @@ $(function(){
             showPageSizeSelector: true,
             allowedPageSizes: [8, 12, 20]
         },
+        headerFilter: {
+            visible: true
+        },
+        filterRow: {
+            visible: true
+        },
         columns: [{
             dataField: "id",
             dataType: "number",
