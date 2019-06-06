@@ -2,7 +2,7 @@ from flask import Flask,render_template, request, session, Response, redirect
 from database import connector
 from model import entities
 import json
-
+import time
 db = connector.Manager()
 engine = db.createEngine()
 
@@ -27,6 +27,17 @@ def get_user(id):
 
     message = { 'status': 404, 'message': 'Not Found'}
     return Response(message, status=404, mimetype='application/json')
+
+
+@app.route('/create_test_users', methods = ['GET'])
+def create_test_users():
+    db_session = db.getSession(engine)
+    user = entities.User(name="David", fullname="Lazo", password="1234", username="qwerty")
+    db_session.add(user)
+    db_session.commit()
+    return "Test user created!"
+
+
 
 @app.route('/users', methods = ['POST'])
 def create_user():
@@ -117,33 +128,38 @@ def update_message():
         session.add(user)
         session.commit()
         return 'Updated Message Form'
+
+
 @app.route('/messages', methods = ['DELETE'])
 def delete_message():
-        id = request.form['key']
-        session = db.getSession(engine)
-        messages = session.query(entities.Messages).filter(entities.Messages.id == id).one()
-        session.delete(messages)
-        session.commit()
-        return "Deleted Message"
-
+    id = request.form['key']
+    session = db.getSession(engine)
+    messages = session.query(entities.Message).filter(entities.Message.id == id).one()
+    session.delete(messages)
+    session.commit()
+    return "Deleted Messages"
 
 #Login xD
 @app.route('/authenticate', methods = ['POST'])
 def authenticate():
+    time.sleep(3)
     #1. get data from request
-    username=request.form['username']
-    password=request.form['password']
+    #Se agrego el  JSon
+    message=json.loads(request.data)
+    username=message['username']
+    password=message['password']
     #2. get user from database
     db_seccion = db.getSession(engine)
-
     try:
         user= db_seccion.query(entities.User
                                ).filter(entities.User.username == username
                                ).filter(entities.User.password == password
                                ).one()
-        return render_template("success.html")
+        message ={'message':'Authorized'}
+        return Response(message, status=200,mimetype='application/json')
     except Exception:
-        return render_template("fail.html")
+        message ={'message':'Unauthorized'}
+        return Response(message, status=401 ,mimetype='application/json')
 
 
 if __name__ == '__main__':

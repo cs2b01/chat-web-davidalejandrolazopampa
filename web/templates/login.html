@@ -22,20 +22,33 @@
                <td colspan="2"><input type="button" value="login" onclick="getData()"/></td>
            </tr>
        </table>
+       <label id="action">Waiting for User</label>
    </form>
 <script>
     function getData(){
+    $('#action').html("Authenticating...");
         var username = $('#username').val();
         var password = $('#password').val();
+        var message = JSON.stringify({
+                "username": username,
+                "password": password
+            });
 
-
-
-
-var message = JSON.stringify({
-        "username" : username,
-        "password" : password
-});
-        alert(message);
+        $.ajax({
+            url:'/authenticate',
+            type:'POST',
+            contentType: 'application/json',
+            data: message,
+            dataType:'json',
+            success: function(respone){
+                //alert(JSON.stringify(respone));
+                $('#action').html(respone['statusText']);
+            },
+            error: function(respone){
+                //alert(JSON.stringify(respone));
+                $('#action').html(respone['statusText']);
+            }
+        });
 }
 </script>
 </body>
