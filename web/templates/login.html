@@ -3,53 +3,33 @@
 <head>
     <meta charset="UTF-8">
     <title>Chat Login</title>
-    <link rel="stylesheet" href="/static/css/bootstrap.min.css">
-    <script src="/static/js/libs/bootstrap.min.js" ></script>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
+    <script src="login.js"></script>
 </head>
 <body>
-   <form method="POST" action="/authenticate">
-       <table>
-           <tr>
-               <td>Username</td>
-               <td><input type="text" name="username" id="username"/></td>
-           </tr>
-           <tr>
-               <td>Password</td>
-               <td><input type="password" name="password" id="password"/></td>
-           </tr>
-           <tr>
-               <td colspan="2"><input type="button" value="login" onclick="getData()"/></td>
-           </tr>
-       </table>
-       <label id="action">Waiting for User</label>
-   </form>
-<script>
-    function getData(){
-    $('#action').html("Authenticating...");
-        var username = $('#username').val();
-        var password = $('#password').val();
-        var message = JSON.stringify({
-                "username": username,
-                "password": password
-            });
 
-        $.ajax({
-            url:'/authenticate',
-            type:'POST',
-            contentType: 'application/json',
-            data: message,
-            dataType:'json',
-            success: function(respone){
-                //alert(JSON.stringify(respone));
-                $('#action').html(respone['statusText']);
-            },
-            error: function(respone){
-                //alert(JSON.stringify(respone));
-                $('#action').html(respone['statusText']);
-            }
-        });
-}
-</script>
+    <table style="margin: 0 auto;">
+        <tr>
+            <td>Username</td>
+            <td><input type="text" name="username" id="username"/></td>
+        </tr>
+        <tr>
+            <td>Password</td>
+            <td><input type="password" name="password" id="password" /></td>
+        </tr>
+        <tr>
+            <td colspan="2">
+                <input type="button" value="login" onclick="getData()"/>
+            </td>
+        </tr>
+        <tr>
+            <td >
+                <div id="action"></div>
+
+            </td>
+        </tr>
+    </table>
+
+
 </body>
 </html>

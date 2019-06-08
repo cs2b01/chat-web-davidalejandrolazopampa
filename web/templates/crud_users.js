@@ -29,24 +29,18 @@ $(function(){
             showPageSizeSelector: true,
             allowedPageSizes: [8, 12, 20]
         },
-        headerFilter: {
-            visible: true
-        },
-        filterRow: {
-            visible: true
-        },
         columns: [{
             dataField: "id",
             dataType: "number",
             allowEditing: false
         }, {
-            dataField: "username",caption: "User: "
+            dataField: "username"
         }, {
-            dataField: "name",caption: "Nombre: "
+            dataField: "name"
         }, {
-            dataField: "fullname",caption: "Apellidos: "
+            dataField: "fullname"
         }, {
-            dataField: "password",caption: "Contraseña:  "
+            dataField: "password"
         }, ],
     }).dxDataGrid("instance");
 });

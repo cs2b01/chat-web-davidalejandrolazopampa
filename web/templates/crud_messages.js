@@ -41,16 +41,36 @@ $(function(){
             dataType: "number",
             allowEditing: false
         }, {
-            dataField: "content",caption: "Mensaje: "
+            dataField: "content"
         }, {
-            dataField: "sent_on",caption: "Fecha: ",
-            dataType: "string",
+            dataField: "sent_on",
             allowEditing: false
         }, {
-            dataField: "user_from_id", caption: "Para"
-        }, {
-            dataField: "user_to_id",caption: "De: "
-
-        }],
+            dataField: "user_from.name",
+            caption: "Para: ",
+            lookup: {
+                    dataSource: DevExpress.data.AspNet.createStore({
+                        key: "id",
+                        loadUrl: "http://127.0.0.1:5000/users",
+                        onBeforeSend: function(method, ajaxOptions) {
+                            ajaxOptions.xhrFields = { withCredentials: true };
+                        }
+                    }),
+                    displayExpr: "name"
+                }
+      }, {
+            dataField: "user_to.name",
+            caption: "De: ",
+            lookup: {
+                    dataSource: DevExpress.data.AspNet.createStore({
+                        key: "id",
+                        loadUrl: "http://127.0.0.1:5000/users",
+                        onBeforeSend: function(method, ajaxOptions) {
+                            ajaxOptions.xhrFields = { withCredentials: true };
+                        }
+                    }),
+                    displayExpr: "name"
+                }
+        }]
     }).dxDataGrid("instance");
 });
