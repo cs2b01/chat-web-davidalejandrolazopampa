@@ -3,6 +3,7 @@ from database import connector
 from model import entities
 import json
 import time
+
 db = connector.Manager()
 engine = db.createEngine()
 
@@ -84,16 +85,16 @@ def delete_users():
 
 #messaje
 
-@app.route('/messages/<id>', methods = ['GET'])
-def get_message(id):
-    db_session = db.getSession(engine)
-    messages = db_session.query(entities.Message).filter(entities.Message.id == id)
-    for message in messages:
-        js = json.dumps(message, cls=connector.AlchemyEncoder)
-        return  Response(js, status=200, mimetype='application/json')
+#@app.route('/messages/<id>', methods = ['GET'])
+#def get_message(id):
+#    db_session = db.getSession(engine)
+#    messages = db_session.query(entities.Message).filter(entities.Message.id == id)
+#    for message in messages:
+#        js = json.dumps(message, cls=connector.AlchemyEncoder)
+#        return  Response(js, status=200, mimetype='application/json')
 
-    message = { 'status': 404, 'message': 'Not Found'}
-    return Response(message, status=404, mimetype='application/json')
+#    message = { 'status': 404, 'message': 'Not Found'}
+#    return Response(message, status=404, mimetype='application/json')
 
 @app.route('/messages', methods = ['GET'])
 def get_messages():
@@ -148,7 +149,7 @@ def delete_message():
 #Login xD
 @app.route('/authenticate', methods = ["POST"])
 def authenticate():
-    time.sleep(1)
+    time.sleep(3)
     message = json.loads(request.data)
     username = message['username']
     password = message['password']
@@ -159,15 +160,75 @@ def authenticate():
             ).filter(entities.User.username == username
             ).filter(entities.User.password == password
             ).one()
-        #message = {'message': 'Authorized'}
-
+        session['logged_user'] = user.id
+        message = {'message': 'Authorized'}
         return Response(message, status=200, mimetype='application/json')
     except Exception:
-        #message = {'message': 'Unauthorized'}
-
+        message = {'message': 'Unauthorized'}
         return Response(message, status=401, mimetype='application/json')
+#Chat
+@app.route('/current', methods = ["GET"])
+def current_user():
+    db_session = db.getSession(engine)
+    user = db_session.query(entities.User).filter(
+        entities.User.id == session['logged_user']
+        ).first()
+    return Response(json.dumps(
+            user,
+            cls=connector.AlchemyEncoder),
+            mimetype='application/json'
+        )
 
+@app.route('/logout', methods = ["GET"])
+def logout():
+    session.clear()
+    return render_template('index.html')
+
+
+@app.route('/messages/<user_from_id>/<user_to_id>', methods = ['GET'])
+def get_messagess(user_from_id, user_to_id ):
+    db_session = db.getSession(engine)
+    messages = db_session.query(entities.Message).filter(
+        entities.Message.user_from_id == user_from_id).filter(
+        entities.Message.user_to_id == user_to_id
+    )
+    message2 = db_session.query(entities.Message).filter(
+        entities.Message.user_to_id == user_from_id).filter(
+        entities.Message.user_from_id == user_to_id
+    )
+    data = []
+    for message in messages:
+        data.append(message)
+    for message in message2:
+        data.append(message)
+    n = len(data)
+    for i in range(n):
+        # Last i elements are already in place
+        for j in range(0, n - i - 1):
+            if data[j].id > data[j + 1].id:
+                data[j], data[j + 1] = data[j + 1], data[j]
+    return Response(json.dumps(data, cls=connector.AlchemyEncoder), mimetype='application/json')
+
+@app.route('/enviar/messages', methods = ["POST"])
+def create_messages():
+    data = json.loads(request.data)
+    user_to_id = data['user_to_id']
+    user_from_id = data['user_from_id']
+    content = data['content']
+
+    message = entities.Message(
+    user_to_id = user_to_id,
+    user_from_id = user_from_id,
+    content = content)
+
+    #2. Save in database
+    db_session = db.getSession(engine)
+    db_session.add(message)
+    db_session.commit()
+
+    response = {'message': 'created'}
+    return Response(json.dumps(response, cls=connector.AlchemyEncoder), status=200, mimetype='application/json')
 
 if __name__ == '__main__':
     app.secret_key = ".."
-app.run(port=5000, threaded=True, host=('127.0.0.1'))
+    app.run(port=5000 , debug=True , threaded=True , host=('127.0.0.1'))
