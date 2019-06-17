@@ -32,7 +32,8 @@ function whoami(){
                 $.each(response, function(){
                         if(response[i].id != currentUserId){
                             f = '<div class="alert alert-secondary" role="alert" onclick=loadMessages('+currentUserId+','+response[i].id+') >';
-                            f = f + response[i].username;
+                            f = f + '<img src="/static/images/user.png" width="30" height="30" />';
+                            f = f + ' '+response[i].username;
                             f = f + '</div>';
 
                             $('#allusers').append(f);
