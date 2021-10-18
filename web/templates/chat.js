@@ -39,8 +39,6 @@ function whoami(){
                             $('#allusers').append(f);
                         }
                         i = i+1;
-
-
                 });
             },
             error: function(response){
@@ -101,6 +99,7 @@ function loadMessages(user_from_id, user_to_id){
             dataType:'json',
             success: function(response){
                 //alert(JSON.stringify(response));
+                loadMessages(currentUserId,currentClickedId);
             },
             error: function(response){
                 //alert(JSON.stringify(response));
